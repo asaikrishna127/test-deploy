@@ -24,10 +24,8 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:git://github.com/sushantmimani/test-deploy.git</connection>
     <developerConnection>scm:git:https://github.com/sushantmimani/test-deploy.git</developerConnection>
     <url>https://github.com/sushantmimani/test-deploy</url>
-    <tag>test-deploy-1.0</tag>
   </scm>
 
   <distributionManagement>
