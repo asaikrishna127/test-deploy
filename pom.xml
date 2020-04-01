@@ -24,7 +24,7 @@
     </developer>
   </developers>
   <scm>
-    <developerConnection>scm:git:https://github.com/sushantmimani/test-deploy.git</developerConnection>
+    <developerConnection>scm:git:https://sushantmimani@github.com/sushantmimani/test-deploy.git</developerConnection>
     <url>https://github.com/sushantmimani/test-deploy</url>
     <tag>test-deploy-1.0.0</tag>
   </scm>
