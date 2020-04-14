@@ -14,8 +14,11 @@ else
    git fetch ${REPO} ${BRANCH}
    git checkout "${BRANCH}"
    FULL_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+   echo ${FULL_VERSION}
    RC=$(echo "$FULL_VERSION" | cut -f2 -d'-' | tr -d [:alpha:])
+   echo ${RC}
    NEW_VERSION="${BASE_VERSION}-rc$((${RC}+1))"
+   echo ${NEW_VERSION}
 fi
 
 TAG="v${NEW_VERSION}"
