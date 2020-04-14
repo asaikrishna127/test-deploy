@@ -21,6 +21,7 @@ else
    echo ${NEW_VERSION}
 fi
 
+
 mvn versions:set versions:commit -DnewVersion="${NEW_VERSION}"
 git add pom.xml
 git commit -m "Release candidate version bump to ${NEW_VERSION}"
