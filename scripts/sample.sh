@@ -8,7 +8,7 @@ BRANCH="release-${BASE_VERSION}"
 git ls-remote --exit-code --heads ${REPO} ${BRANCH} > /dev/null
 if [[ "$?" == "2" ]]; then
     NEW_VERSION="${BASE_VERSION}-rc1"
-    mvn release:branch -DbranchName=${BRANCH}
+    mvn --batch-mode release:branch -DbranchName=${BRANCH}
     git checkout -b "${BRANCH}"
 else
    git fetch ${REPO} ${BRANCH}
@@ -21,6 +21,9 @@ else
    echo ${NEW_VERSION}
 fi
 
+mvn versions:set versions:commit -DnewVersion="${NEW_VERSION}"
+git add pom.xml
+git commit -m "Release candidate version bump to ${NEW_VERSION}"
 TAG="v${NEW_VERSION}"
 git tag -f ${TAG}
 git push origin "${BRANCH}"
