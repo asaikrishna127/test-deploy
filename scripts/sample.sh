@@ -8,7 +8,7 @@ BRANCH="release-${BASE_VERSION}"
 git ls-remote --exit-code --heads ${REPO} ${BRANCH} > /dev/null
 if [[ "$?" == "2" ]]; then
     NEW_VERSION="${BASE_VERSION}-rc1"
-    mvn --batch-mode release:branch -DbranchName=${BRANCH} -DupdateBranchVersions=true -DupdateWorkingCopyVersions=false
+    mvn --batch-mode release:branch -DbranchName=${BRANCH}
     git checkout -b "${BRANCH}"
 else
    git fetch ${REPO} ${BRANCH}
