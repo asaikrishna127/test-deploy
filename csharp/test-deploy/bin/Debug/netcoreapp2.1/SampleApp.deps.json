@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v2.1": {
-      "SampleApp/1.0.0-alpha": {
+      "SampleApp/0.0.1-alpha": {
         "runtime": {
           "SampleApp.dll": {}
         }
@@ -14,7 +14,7 @@
     }
   },
   "libraries": {
-    "SampleApp/1.0.0-alpha": {
+    "SampleApp/0.0.1-alpha": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

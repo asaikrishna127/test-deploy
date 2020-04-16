@@ -1,5 +1,0 @@
-/Users/smimani/java/test-deploy/test-deploy/bin/Debug/test_deploy.pdb
-/Users/smimani/java/test-deploy/test-deploy/obj/Debug/test-deploy.csprojAssemblyReference.cache
-/Users/smimani/java/test-deploy/test-deploy/obj/Debug/test_deploy.pdb
-/Users/smimani/java/test-deploy/test-deploy/bin/Debug/test_deploy.exe
-/Users/smimani/java/test-deploy/test-deploy/obj/Debug/test_deploy.exe

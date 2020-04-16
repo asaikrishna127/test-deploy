@@ -5,7 +5,7 @@
   },
   "projects": {
     "/Users/smimani/java/test-deploy/csharp/test-deploy/test-deploy.csproj": {
-      "version": "1.0.0-alpha",
+      "version": "0.0.1-alpha",
       "restore": {
         "projectUniqueName": "/Users/smimani/java/test-deploy/csharp/test-deploy/test-deploy.csproj",
         "projectName": "com.github.sushantmimani",

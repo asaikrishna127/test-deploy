@@ -1,0 +1,108 @@
+version: 2.1
+
+# Aliases for convenience/templating
+references:
+  workspace_root: &workspace_root
+    /tmp/workspace
+  attach_workspace: &attach_workspace
+    attach_workspace:
+      at: *workspace_root
+
+workflows:
+  version: 2
+  build-test-and-maybe-deploy:
+    jobs:
+      - java-project
+      - csharp-project
+jobs:
+  java-secure-memory:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            # when project files change, use increasingly general patterns to restore cache.
+            # vN prefix in case we ever need to regenerate all caches
+            - v1-maven-{{ .Branch }}-{{ .BuildNum }}
+            - v1-maven-{{ .Branch }}-
+            - v1-maven-
+      - run:
+          name: Build
+          command: |
+            cd java/test-deploy
+            ./scripts/clean.sh
+            ./scripts/build.sh
+          name: Deploy if needed
+          command: |
+            cd java/secure-memory
+
+            # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
+            TAG_NAME=$(git tag -l --points-at HEAD)
+            echo "Branch = ${CIRCLE_BRANCH}, Tag = ${TAG_NAME}"
+
+            # Only deploy for master, RC tags, and prod release tags
+            if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
+              echo "Detected master branch, proceeding to deploy Snapshot"
+              #./scripts/deploy.sh
+            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" =~ ^v[0-9]*\.[0-9]*\.[0-9]*-rc[0-9]*$ ]]; then
+              echo "Detected tagged RC, proceeding to deploy"
+              ./scripts/deploy.sh
+            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" =~ ^v[0-9]*\.[0-9]*\.[0-9]*$ ]]; then
+              echo "Detected tagged production release, proceeding to deploy"
+              ./scripts/deploy.sh
+            else
+              echo "Not releasable build, skipping deployment step"
+            fi
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-maven-{{ .Branch }}-{{ .BuildNum }}
+  csharp-logging:
+    docker:
+      - image: mcr.microsoft.com/dotnet/core/sdk:2.2
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            # when project files change, use increasingly general patterns to restore cache.
+            # vN prefix in case we ever need to regenerate all caches
+            - v1-nuget-{{ .Branch }}-{{ .BuildNum }}
+            - v1-nuget-{{ .Branch }}-
+            - v1-nuget-
+      - run:
+          name: Setup csharp environment
+          command: |
+            apt-get update
+            apt-get install -y libxml2-utils
+            dotnet tool install -g trx2junit
+      - run:
+          name: Build
+          command: |
+            cd csharp/test-deploy
+            ./scripts/clean.sh
+            ./scripts/build.sh
+      - run:
+          name: Deploy if needed
+          command: |
+            cd csharp/Logging
+
+            # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
+            TAG_NAME=$(git tag -l --points-at HEAD)
+            echo "Branch = ${CIRCLE_BRANCH}, Tag = ${TAG_NAME}"
+
+            # Only deploy for RC tags and prod release tags (we won't deploy alpha builds for C#)
+            if [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" =~ ^v[0-9]*\.[0-9]*\.[0-9]*-rc[0-9]*$ ]]; then
+              echo "Detected tagged RC, proceeding to deploy"
+              ./scripts/deploy.sh
+            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" =~ ^v[0-9]*\.[0-9]*\.[0-9]*$ ]]; then
+              echo "Detected tagged production release, proceeding to deploy"
+              ./scripts/deploy.sh
+            else
+              echo "Not releasable build, skipping deployment step"
+            fi
+      - save_cache:
+          paths:
+            - ~/.nuget
+          key: v1-nuget-{{ .Branch }}-{{ .BuildNum }}
+  
