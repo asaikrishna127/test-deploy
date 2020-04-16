@@ -1,0 +1,65 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/smimani/java/test-deploy/csharp/test-deploy/test-deploy.csproj": {}
+  },
+  "projects": {
+    "/Users/smimani/java/test-deploy/csharp/test-deploy/test-deploy.csproj": {
+      "version": "1.0.0-alpha",
+      "restore": {
+        "projectUniqueName": "/Users/smimani/java/test-deploy/csharp/test-deploy/test-deploy.csproj",
+        "projectName": "com.github.sushantmimani",
+        "projectPath": "/Users/smimani/java/test-deploy/csharp/test-deploy/test-deploy.csproj",
+        "packagesPath": "/Users/smimani/.nuget/packages/",
+        "outputPath": "/Users/smimani/java/test-deploy/csharp/test-deploy/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/Users/smimani/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.1"
+        ],
+        "sources": {
+          "/Users/smimani/.nuget/NuGet/../packages": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.1": {
+          "dependencies": {
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.1.0, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.102/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

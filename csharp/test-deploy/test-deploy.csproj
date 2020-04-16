@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp2.1</TargetFramework>
+        <PackageId>com.github.sushantmimani</PackageId>
+        <!-- NOTE: Version controlled via Directory.Build.props  -->
+        <!--<Version></Version>-->
+        <Authors>Sushant</Authors>
+        <RootNamespace>com.github.sushantmimani</RootNamespace>
+        <AssemblyName>SampleApp</AssemblyName>
+        <LangVersion>7.1</LangVersion>
+    </PropertyGroup>
+    <ItemGroup>
+      <Folder Include="Properties" />
+    </ItemGroup>
+</Project>
