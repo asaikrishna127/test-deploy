@@ -36,7 +36,7 @@ jobs:
       - run:
           name: Deploy if needed
           command: |
-            cd java/secure-memory
+            cd java/test-deploy
 
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
             TAG_NAME=$(git tag -l --points-at HEAD)
@@ -87,7 +87,7 @@ jobs:
       - run:
           name: Deploy if needed
           command: |
-            cd csharp/Logging
+            cd csharp/test-deploy
 
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
             TAG_NAME=$(git tag -l --points-at HEAD)
