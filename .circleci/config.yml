@@ -15,7 +15,7 @@ workflows:
       - java-project
       - csharp-project
 jobs:
-  java-secure-memory:
+  java-project:
     docker:
       - image: circleci/openjdk:8-jdk
     steps:
@@ -33,6 +33,7 @@ jobs:
             cd java/test-deploy
             ./scripts/clean.sh
             ./scripts/build.sh
+      - run:
           name: Deploy if needed
           command: |
             cd java/secure-memory
@@ -58,7 +59,7 @@ jobs:
           paths:
             - ~/.m2
           key: v1-maven-{{ .Branch }}-{{ .BuildNum }}
-  csharp-logging:
+  csharp-project:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
     steps:
@@ -82,6 +83,7 @@ jobs:
             cd csharp/test-deploy
             ./scripts/clean.sh
             ./scripts/build.sh
+    
       - run:
           name: Deploy if needed
           command: |
