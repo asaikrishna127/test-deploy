@@ -5,7 +5,7 @@ echo ${BASE_VERSION}
 
 echo ${PRIVATE_GPG_KEY} | base64 --decode | gpg --batch --no-tty --import --yes
 
-mvn -DskipTests deploy -Prelease
+mvn -DskipTests deploy -s ../../.circleci/settings.xml -Prelease
 
 # Bump master
 git checkout master
