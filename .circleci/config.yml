@@ -13,7 +13,8 @@ workflows:
   build-test-and-maybe-deploy:
     jobs:
       - java-project
-      - csharp-project
+      - java-project-1
+      # - csharp-project
 jobs:
   java-project:
     docker:
@@ -40,18 +41,64 @@ jobs:
 
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
             TAG_NAME=$(git tag -l --points-at HEAD)
-            echo "Branch = ${CIRCLE_BRANCH}, Tag = ${TAG_NAME}"
+            VERSION=`echo ${CIRCLE_BRANCH} | cut -f1 -d'-'`
+            echo "Branch = ${CIRCLE_BRANCH}, Tag = ${TAG_NAME}, Version=${VERSION}"
 
             # Only deploy for master, RC tags, and prod release tags
             if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
               echo "Detected master branch, proceeding to deploy Snapshot"
-              #./scripts/deploy.sh
-            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" =~ ^v[0-9]*\.[0-9]*\.[0-9]*-rc[0-9]*$ ]]; then
-              echo "Detected tagged RC, proceeding to deploy"
-              ./scripts/deploy.sh
+              ./scripts/deploy_snapshot.sh
+            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" == " " ]]; then
+              echo "Deploy and create new tag"
+              ./scripts/deploy_and_create_tag.sh
             elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" =~ ^v[0-9]*\.[0-9]*\.[0-9]*$ ]]; then
-              echo "Detected tagged production release, proceeding to deploy"
-              ./scripts/deploy.sh
+              echo "Deploy and update tag"
+              ./scripts/deploy_and_update_tag.sh
+            else
+              echo "Not releasable build, skipping deployment step"
+            fi
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-maven-{{ .Branch }}-{{ .BuildNum }}
+  java-project-1:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            # when project files change, use increasingly general patterns to restore cache.
+            # vN prefix in case we ever need to regenerate all caches
+            - v1-maven-{{ .Branch }}-{{ .BuildNum }}
+            - v1-maven-{{ .Branch }}-
+            - v1-maven-
+      - run:
+          name: Build
+          command: |
+            cd java/test-deploy-1
+            ./scripts/clean.sh
+            ./scripts/build.sh
+      - run:
+          name: Deploy if needed
+          command: |
+            cd java/test-deploy-1
+
+            # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
+            TAG_NAME=$(git tag -l --points-at HEAD)
+            VERSION=`echo ${CIRCLE_BRANCH} | cut -f1 -d'-'`
+            echo "Branch = ${CIRCLE_BRANCH}, Tag = ${TAG_NAME}, Version=${VERSION}"
+
+            # Only deploy for master, RC tags, and prod release tags
+            if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
+              echo "Detected master branch, proceeding to deploy Snapshot"
+              ./scripts/deploy_snapshot.sh
+            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" == " " ]]; then
+              echo "Deploy and create new tag"
+              ./scripts/deploy_and_create_tag.sh
+            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" =~ ^v[0-9]*\.[0-9]*\.[0-9]*$ ]]; then
+              echo "Deploy and update tag"
+              ./scripts/deploy_and_update_tag.sh
             else
               echo "Not releasable build, skipping deployment step"
             fi
