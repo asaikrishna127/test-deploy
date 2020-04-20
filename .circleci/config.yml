@@ -47,7 +47,7 @@ jobs:
             # Only deploy for master, RC tags, and prod release tags
             if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
               echo "Detected master branch, proceeding to deploy Snapshot"
-              ./scripts/deploy_snapshot.sh
+              ./scripts/release_snapshot.sh
             elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${BASE_VERSION}" == "" ]]; then
               echo "Deploy prod artifact"
               ./scripts/release_prod.sh
@@ -89,7 +89,7 @@ jobs:
             # Only deploy for master, RC tags, and prod release tags
             if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
               echo "Detected master branch, proceeding to deploy Snapshot"
-              ./scripts/deploy_snapshot.sh
+              ./scripts/release_snapshot.sh
             elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${BASE_VERSION}" == "" ]]; then
               echo "Deploy prod artifact"
               ./scripts/release_prod.sh
