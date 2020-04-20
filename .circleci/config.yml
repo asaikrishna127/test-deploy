@@ -41,7 +41,7 @@ jobs:
 
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
             TAG_NAME=$(git tag -l --points-at HEAD)
-            BASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f1 -d'-'`
+            BASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
             echo "Branch = ${CIRCLE_BRANCH}, Tag = ${TAG_NAME}, Version=${BASE_VERSION}"
 
             # Only deploy for master, RC tags, and prod release tags
@@ -83,7 +83,7 @@ jobs:
 
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
             TAG_NAME=$(git tag -l --points-at HEAD)
-            VERSION=`echo ${CIRCLE_BRANCH} | cut -f1 -d'-'`
+            BASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
             echo "Branch = ${CIRCLE_BRANCH}, Tag = ${TAG_NAME}, Version=${VERSION}"
 
             # Only deploy for master, RC tags, and prod release tags
