@@ -48,7 +48,7 @@ jobs:
             if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
               echo "Detected master branch, proceeding to deploy Snapshot"
               ./scripts/release_snapshot.sh
-            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${BASE_VERSION}" == "" ]]; then
+            elif [[ "${CIRCLE_BRANCH}" =~ release-.* ]]; then
               echo "Deploy prod artifact"
               ./scripts/release_prod.sh
             else
@@ -90,7 +90,7 @@ jobs:
             if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
               echo "Detected master branch, proceeding to deploy Snapshot"
               ./scripts/release_snapshot.sh
-            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${BASE_VERSION}" == "" ]]; then
+            elif [[ "${CIRCLE_BRANCH}" =~ release-.* ]]; then
               echo "Deploy prod artifact"
               ./scripts/release_prod.sh
             else
