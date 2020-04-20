@@ -14,7 +14,7 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <gpg.executable>/usr/local/bin/gpg</gpg.executable>
+        <gpg.executable>gpg</gpg.executable>
       </properties>
     </profile>
   </profiles>
