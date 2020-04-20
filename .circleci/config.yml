@@ -41,19 +41,16 @@ jobs:
 
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
             TAG_NAME=$(git tag -l --points-at HEAD)
-            VERSION=`echo ${CIRCLE_BRANCH} | cut -f1 -d'-'`
-            echo "Branch = ${CIRCLE_BRANCH}, Tag = ${TAG_NAME}, Version=${VERSION}"
+            BASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f1 -d'-'`
+            echo "Branch = ${CIRCLE_BRANCH}, Tag = ${TAG_NAME}, Version=${BASE_VERSION}"
 
             # Only deploy for master, RC tags, and prod release tags
             if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
               echo "Detected master branch, proceeding to deploy Snapshot"
               ./scripts/deploy_snapshot.sh
-            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" == "" ]]; then
-              echo "Deploy and create new tag"
-              ./scripts/deploy_and_create_tag.sh
-            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" =~ ^v[0-9]*\.[0-9]*\.[0-9]*$ ]]; then
-              echo "Deploy and update tag"
-              ./scripts/deploy_and_update_tag.sh
+            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${BASE_VERSION}" == "" ]]; then
+              echo "Deploy prod artifact"
+              ./scripts/release_prod.sh
             else
               echo "Not releasable build, skipping deployment step"
             fi
@@ -93,12 +90,9 @@ jobs:
             if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
               echo "Detected master branch, proceeding to deploy Snapshot"
               ./scripts/deploy_snapshot.sh
-            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" == "" ]]; then
-              echo "Deploy and create new tag"
-              ./scripts/deploy_and_create_tag.sh
-            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" =~ ^v[0-9]*\.[0-9]*\.[0-9]*$ ]]; then
-              echo "Deploy and update tag"
-              ./scripts/deploy_and_update_tag.sh
+            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${BASE_VERSION}" == "" ]]; then
+              echo "Deploy prod artifact"
+              ./scripts/release_prod.sh
             else
               echo "Not releasable build, skipping deployment step"
             fi
