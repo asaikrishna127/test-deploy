@@ -48,7 +48,7 @@ jobs:
             if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
               echo "Detected master branch, proceeding to deploy Snapshot"
               ./scripts/deploy_snapshot.sh
-            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" == " " ]]; then
+            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" == "" ]]; then
               echo "Deploy and create new tag"
               ./scripts/deploy_and_create_tag.sh
             elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" =~ ^v[0-9]*\.[0-9]*\.[0-9]*$ ]]; then
@@ -93,7 +93,7 @@ jobs:
             if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
               echo "Detected master branch, proceeding to deploy Snapshot"
               ./scripts/deploy_snapshot.sh
-            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" == " " ]]; then
+            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" == "" ]]; then
               echo "Deploy and create new tag"
               ./scripts/deploy_and_create_tag.sh
             elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" =~ ^v[0-9]*\.[0-9]*\.[0-9]*$ ]]; then
