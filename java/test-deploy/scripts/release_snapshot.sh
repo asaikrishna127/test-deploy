@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 echo "Deploying snapshot"
-mvn -DskipTests deploy
+mvn -DskipTests -s ../.circleci/settings.xml deploy
