@@ -79,6 +79,9 @@ jobs:
             cd java/test-deploy-1
             ./scripts/clean.sh
             ./scripts/build.sh
+      - add_ssh_keys:
+          fingerprints:
+            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
       - run:
           name: Deploy if needed
           command: |
