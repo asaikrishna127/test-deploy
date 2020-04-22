@@ -8,5 +8,8 @@
         <RootNamespace>com.github.sushantmimani</RootNamespace>
         <AssemblyName>test-deploy-1</AssemblyName>
         <LangVersion>7.1</LangVersion>
+        <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+        <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+        <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     </PropertyGroup>
 </Project>
