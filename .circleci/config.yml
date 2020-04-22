@@ -17,11 +17,11 @@ workflows:
       - csharp-project
       - csharp-project-1
       - push-and-tag:
-        requires:
-          - java-project
-          - java-project-1
-          - csharp-project
-          - csharp-project-1
+          requires:
+            - java-project
+            - java-project-1
+            - csharp-project
+            - csharp-project-1
 jobs:
   java-project:
     docker:
