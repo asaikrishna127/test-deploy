@@ -190,7 +190,7 @@ jobs:
       - run:
           name: Deploy if needed
           command: |
-            cd csharp/test-deploy
+            cd csharp/test-deploy-1
 
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
             RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
