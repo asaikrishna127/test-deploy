@@ -14,7 +14,8 @@ workflows:
     jobs:
       - java-project
       - java-project-1
-      # - csharp-project
+      - csharp-project
+      - csharp-project-1
 jobs:
   java-project:
     docker:
@@ -111,6 +112,9 @@ jobs:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
@@ -137,16 +141,69 @@ jobs:
             cd csharp/test-deploy
 
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
-            TAG_NAME=$(git tag -l --points-at HEAD)
-            echo "Branch = ${CIRCLE_BRANCH}, Tag = ${TAG_NAME}"
+            RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
+            BASE_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+            VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
 
-            # Only deploy for RC tags and prod release tags (we won't deploy alpha builds for C#)
-            if [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" =~ ^v[0-9]*\.[0-9]*\.[0-9]*-rc[0-9]*$ ]]; then
-              echo "Detected tagged RC, proceeding to deploy"
-              ./scripts/deploy.sh
-            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${TAG_NAME}" =~ ^v[0-9]*\.[0-9]*\.[0-9]*$ ]]; then
-              echo "Detected tagged production release, proceeding to deploy"
-              ./scripts/deploy.sh
+            # Only deploy for master, RC tags, and prod release tags
+            if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
+              echo "Detected master branch, proceeding to deploy Snapshot"
+              ./scripts/release_snapshot.sh https://api.nuget.org/v3/index.json
+            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "alpha" ]]; then
+              echo "Deploy prod artifact"
+              ./scripts/release_prod.sh https://api.nuget.org/v3/index.json
+            else
+              echo "Not releasable build, skipping deployment step"
+            fi
+      - save_cache:
+          paths:
+            - ~/.nuget
+          key: v1-nuget-{{ .Branch }}-{{ .BuildNum }}
+  csharp-project-1:
+    docker:
+      - image: mcr.microsoft.com/dotnet/core/sdk:2.2
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            # when project files change, use increasingly general patterns to restore cache.
+            # vN prefix in case we ever need to regenerate all caches
+            - v1-nuget-{{ .Branch }}-{{ .BuildNum }}
+            - v1-nuget-{{ .Branch }}-
+            - v1-nuget-
+      - add_ssh_keys:
+          fingerprints:
+            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
+      - run:
+          name: Setup csharp environment
+          command: |
+            apt-get update
+            apt-get install -y libxml2-utils
+            dotnet tool install -g trx2junit
+      - run:
+          name: Build
+          command: |
+            cd csharp/test-deploy-1
+            ./scripts/clean.sh
+            ./scripts/build.sh
+    
+      - run:
+          name: Deploy if needed
+          command: |
+            cd csharp/test-deploy
+
+            # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
+            RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
+            BASE_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+            VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
+
+            # Only deploy for master, RC tags, and prod release tags
+            if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
+              echo "Detected master branch, proceeding to deploy Snapshot"
+              ./scripts/release_snapshot.sh https://api.nuget.org/v3/index.json
+            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "alpha" ]]; then
+              echo "Deploy prod artifact"
+              ./scripts/release_prod.sh https://api.nuget.org/v3/index.json
             else
               echo "Not releasable build, skipping deployment step"
             fi

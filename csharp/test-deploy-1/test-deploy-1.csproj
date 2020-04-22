@@ -6,7 +6,7 @@
         <!--<Version></Version>-->
         <Authors>Sushant</Authors>
         <RootNamespace>com.github.sushantmimani</RootNamespace>
-        <AssemblyName>test-deploy</AssemblyName>
+        <AssemblyName>test-deploy-1</AssemblyName>
         <LangVersion>7.1</LangVersion>
     </PropertyGroup>
 </Project>
