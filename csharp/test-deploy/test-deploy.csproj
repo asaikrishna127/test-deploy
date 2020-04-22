@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netcoreapp2.1</TargetFramework>
-        <PackageId>com.github.sushantmimani</PackageId>
+        <PackageId>com.github.sushantmimani.testdeploy</PackageId>
         <!-- NOTE: Version controlled via Directory.Build.props  -->
         <!--<Version></Version>-->
         <Authors>Sushant</Authors>
-        <RootNamespace>com.github.sushantmimani.testdeploy</RootNamespace>
+        <RootNamespace>com.github.sushantmimani</RootNamespace>
         <LangVersion>7.1</LangVersion>
         <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
         <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
