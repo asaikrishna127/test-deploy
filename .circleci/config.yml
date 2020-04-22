@@ -216,12 +216,14 @@ jobs:
       - run:
           name: Update GitHub
           command: |
-            RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
-            git checkout master
-            git status
-            git push origin master
-            TAG="v${RELEASE_VERSION}"
-            git tag -f ${TAG}
-            git push origin ${TAG}
+            if [[ "${CIRCLE_BRANCH}" =~ release-.* ]]; then
+              RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
+              git checkout master
+              git status
+              git push origin master
+              TAG="v${RELEASE_VERSION}"
+              git tag -f ${TAG}
+              git push origin ${TAG}
+            fi
 
   
