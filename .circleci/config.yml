@@ -16,6 +16,12 @@ workflows:
       - java-project-1
       - csharp-project
       - csharp-project-1
+      - push-and-tag:
+        requires:
+          - java-project
+          - java-project-1
+          - csharp-project
+          - csharp-project-1
 jobs:
   java-project:
     docker:
@@ -29,9 +35,6 @@ jobs:
             - v1-maven-{{ .Branch }}-{{ .BuildNum }}
             - v1-maven-{{ .Branch }}-
             - v1-maven-
-      - add_ssh_keys:
-          fingerprints:
-            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
       - run:
           name: Build
           command: |
@@ -80,9 +83,6 @@ jobs:
             cd java/test-deploy-1
             ./scripts/clean.sh
             ./scripts/build.sh
-      - add_ssh_keys:
-          fingerprints:
-            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
       - run:
           name: Deploy if needed
           command: |
@@ -112,9 +112,6 @@ jobs:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
     steps:
       - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
@@ -171,9 +168,6 @@ jobs:
             - v1-nuget-{{ .Branch }}-{{ .BuildNum }}
             - v1-nuget-{{ .Branch }}-
             - v1-nuget-
-      - add_ssh_keys:
-          fingerprints:
-            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
       - run:
           name: Setup csharp environment
           command: |
@@ -211,4 +205,21 @@ jobs:
           paths:
             - ~/.nuget
           key: v1-nuget-{{ .Branch }}-{{ .BuildNum }}
+  push-and-tag:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
+      - run:
+          name: Update GitHub
+          command: |
+            git checkout master
+            git config user.email "sushant.mimani@gmail.com"
+            git config user.name "Sushant Mimani"
+            git status
+            git push origin master
+
   

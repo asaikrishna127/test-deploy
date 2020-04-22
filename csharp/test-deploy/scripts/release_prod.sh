@@ -10,11 +10,8 @@ find . -name *${BASE_VERSION}.nupkg  | xargs -L1 -I '{}' dotnet nuget push {} -k
 
 
 # Bump master
-git config user.email "sushant.mimani@gmail.com"
-git config user.name "Sushant Mimani"
 MINOR_VERSION=`echo $BASE_VERSION | cut -f2 -d.`
 NEW_BASE_VERSION=`echo $BASE_VERSION | cut -f1 -d.`.$((${MINOR_VERSION}+1)).0
 setversion "${NEW_BASE_VERSION}-alpha" Directory.Build.props
 git add Directory.Build.props
-git commit -m "Master version bump to ${NEW_BASE_VERSION}-alpha"
-git push origin master
+git commit -m "Master version bump to ${NEW_BASE_VERSION}-alpha [skip ci]"
