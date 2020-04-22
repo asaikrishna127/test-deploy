@@ -131,7 +131,7 @@ jobs:
             cd csharp/test-deploy
             ./scripts/clean.sh
             ./scripts/build.sh
-    
+
       - run:
           name: Deploy if needed
           command: |
@@ -180,7 +180,7 @@ jobs:
             cd csharp/test-deploy-1
             ./scripts/clean.sh
             ./scripts/build.sh
-    
+
       - run:
           name: Deploy if needed
           command: |
@@ -216,10 +216,12 @@ jobs:
       - run:
           name: Update GitHub
           command: |
+            RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
             git checkout master
-            git config user.email "sushant.mimani@gmail.com"
-            git config user.name "Sushant Mimani"
             git status
             git push origin master
+            TAG="v${RELEASE_VERSION}"
+            git tag -f ${TAG}
+            git push origin ${TAG}
 
   
