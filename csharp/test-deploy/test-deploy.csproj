@@ -5,8 +5,7 @@
         <!-- NOTE: Version controlled via Directory.Build.props  -->
         <!--<Version></Version>-->
         <Authors>Sushant</Authors>
-        <RootNamespace>com.github.sushantmimani</RootNamespace>
-        <AssemblyName>test-deploy</AssemblyName>
+        <RootNamespace>com.github.sushantmimani.testdeploy</RootNamespace>
         <LangVersion>7.1</LangVersion>
         <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
         <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
