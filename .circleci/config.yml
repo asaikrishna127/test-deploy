@@ -142,7 +142,7 @@ jobs:
 
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
             RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
-            BASE_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+            BASE_VERSION=$(xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props)
             VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
 
             # Only deploy for master, RC tags, and prod release tags
@@ -194,7 +194,7 @@ jobs:
 
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
             RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
-            BASE_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+            BASE_VERSION=$(xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props)
             VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
 
             # Only deploy for master, RC tags, and prod release tags
