@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netcoreapp2.1</TargetFramework>
-        <PackageId>com.github.sushantmimani.testdeploy1</PackageId>
+        <PackageId>com.github.sushantmimani.heloworld</PackageId>
         <!-- NOTE: Version controlled via Directory.Build.props  -->
         <!--<Version></Version>-->
         <Authors>Sushant</Authors>
