@@ -1,13 +1,5 @@
 version: 2.1
 
-# Aliases for convenience/templating
-references:
-  workspace_root: &workspace_root
-    /tmp/workspace
-  attach_workspace: &attach_workspace
-    attach_workspace:
-      at: *workspace_root
-
 workflows:
   version: 2
   build-test-and-maybe-deploy:
@@ -17,13 +9,20 @@ workflows:
           requires:
             - java-project
       - csharp-project
-      - csharp-project-1
-      - push-and-tag:
+      - csharp-project-1:
+          requires:
+            - csharp-project
+      - deploy:
           requires:
             - java-project
             - java-project-1
             - csharp-project
             - csharp-project-1
+          filters:
+            branches:
+              only:
+                - /release-.*/
+
 jobs:
   java-project:
     docker:
@@ -32,9 +31,6 @@ jobs:
       - checkout
       -  attach_workspace:
           at: ~/project
-      - add_ssh_keys:
-          fingerprints:
-            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
@@ -48,42 +44,15 @@ jobs:
             cd java/test-deploy
             ./scripts/clean.sh
             ./scripts/build.sh
-      - run:
-          name: Deploy if needed
-          command: |
-            cd java/test-deploy
-
-            # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
-            RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
-            BASE_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
-            VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
-
-            # Only deploy for master, RC tags, and prod release tags
-            if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
-              echo "Detected master branch, proceeding to deploy Snapshot"
-              ./scripts/release_snapshot.sh
-            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "SNAPSHOT" ]]; then
-              echo "Deploy prod artifact"
-              ./scripts/release_prod.sh
-            else
-              echo "Not releasable build, skipping deployment step"
-            fi
       - save_cache:
           paths:
             - ~/.m2
           key: v1-maven-{{ .Branch }}-{{ .BuildNum }}
-      - persist_to_workspace:
-          root: ~/project
-          paths: /java/test-deploy
   java-project-1:
     docker:
       - image: circleci/openjdk:8-jdk
     steps:
-      - attach_workspace:
-          at: ~/
-      - add_ssh_keys:
-          fingerprints:
-            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
+      - checkout
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
@@ -99,8 +68,98 @@ jobs:
             cd java/test-deploy-1
             ./scripts/clean.sh
             ./scripts/build.sh
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-maven-{{ .Branch }}-{{ .BuildNum }}
+  csharp-project:
+    docker:
+      - image: mcr.microsoft.com/dotnet/core/sdk:2.2
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            # when project files change, use increasingly general patterns to restore cache.
+            # vN prefix in case we ever need to regenerate all caches
+            - v1-nuget-{{ .Branch }}-{{ .BuildNum }}
+            - v1-nuget-{{ .Branch }}-
+            - v1-nuget-
       - run:
-          name: Deploy if needed
+          name: Setup csharp environment
+          command: |
+            apt-get update
+            apt-get install -y libxml2-utils
+            dotnet tool install -g trx2junit
+      - run:
+          name: Build
+          command: |
+            cd csharp/test-deploy
+            ./scripts/clean.sh
+            ./scripts/build.sh
+      - save_cache:
+          paths:
+            - ~/.nuget
+          key: v1-nuget-{{ .Branch }}-{{ .BuildNum }}
+  csharp-project-1:
+    docker:
+      - image: mcr.microsoft.com/dotnet/core/sdk:2.2
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            # when project files change, use increasingly general patterns to restore cache.
+            # vN prefix in case we ever need to regenerate all caches
+            - v1-nuget-{{ .Branch }}-{{ .BuildNum }}
+            - v1-nuget-{{ .Branch }}-
+            - v1-nuget-
+      - run:
+          name: Setup csharp environment
+          command: |
+            apt-get update
+            apt-get install -y libxml2-utils
+            dotnet tool install -g trx2junit
+      - run:
+          name: Build
+          command: |
+            cd csharp/test-deploy-1
+            ./scripts/clean.sh
+            ./scripts/build.sh
+      - save_cache:
+          paths:
+            - ~/.nuget
+          key: v1-nuget-{{ .Branch }}-{{ .BuildNum }}
+  deploy:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
+      - run:
+          name: Deploy java-project
+          command: |
+            cd java/test-deploy
+
+            # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
+            RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
+            BASE_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+            VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
+
+            # Only deploy for master, RC tags, and prod release tags
+            if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
+              echo "Detected master branch, proceeding to deploy Snapshot"
+              ./scripts/release_snapshot.sh
+            elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "SNAPSHOT" ]]; then
+              echo "Deploy prod artifact"
+              ./scripts/release_prod.sh
+            else
+              echo "Not releasable build, skipping deployment step"
+            fi
+
+            cd ../../
+      - run:
+          name: Deploy java-project-1
           command: |
             cd java/test-deploy-1
 
@@ -119,130 +178,59 @@ jobs:
             else
               echo "Not releasable build, skipping deployment step"
             fi
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: v1-maven-{{ .Branch }}-{{ .BuildNum }}
-  csharp-project:
-    docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:2.2
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
-      - restore_cache:
-          keys:
-            # when project files change, use increasingly general patterns to restore cache.
-            # vN prefix in case we ever need to regenerate all caches
-            - v1-nuget-{{ .Branch }}-{{ .BuildNum }}
-            - v1-nuget-{{ .Branch }}-
-            - v1-nuget-
-      - run:
-          name: Setup csharp environment
-          command: |
-            apt-get update
-            apt-get install -y libxml2-utils
-            dotnet tool install -g trx2junit
-      - run:
-          name: Build
-          command: |
-            cd csharp/test-deploy
-            ./scripts/clean.sh
-            ./scripts/build.sh
 
+            cd ../../
       - run:
-          name: Deploy if needed
+          name: Deploy csharp-project
           command: |
             cd csharp/test-deploy
 
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
             RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
-            BASE_VERSION=$(xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props)
+            BASE_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
             VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
 
             # Only deploy for master, RC tags, and prod release tags
             if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
               echo "Detected master branch, proceeding to deploy Snapshot"
-              ./scripts/release_snapshot.sh https://api.nuget.org/v3/index.json
+              ./scripts/release_snapshot.sh
             elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "alpha" ]]; then
               echo "Deploy prod artifact"
-              ./scripts/release_prod.sh https://api.nuget.org/v3/index.json
+              ./scripts/release_prod.sh
             else
               echo "Not releasable build, skipping deployment step"
             fi
-      - save_cache:
-          paths:
-            - ~/.nuget
-          key: v1-nuget-{{ .Branch }}-{{ .BuildNum }}
-  csharp-project-1:
-    docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:2.2
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
-      - restore_cache:
-          keys:
-            # when project files change, use increasingly general patterns to restore cache.
-            # vN prefix in case we ever need to regenerate all caches
-            - v1-nuget-{{ .Branch }}-{{ .BuildNum }}
-            - v1-nuget-{{ .Branch }}-
-            - v1-nuget-
-      - run:
-          name: Setup csharp environment
-          command: |
-            apt-get update
-            apt-get install -y libxml2-utils
-            dotnet tool install -g trx2junit
-      - run:
-          name: Build
-          command: |
-            cd csharp/test-deploy-1
-            ./scripts/clean.sh
-            ./scripts/build.sh
 
+            cd ../../
       - run:
-          name: Deploy if needed
+          name: Deploy csharp-project-1
           command: |
             cd csharp/test-deploy-1
 
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
             RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
-            BASE_VERSION=$(xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props)
+            BASE_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
             VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
 
             # Only deploy for master, RC tags, and prod release tags
             if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
               echo "Detected master branch, proceeding to deploy Snapshot"
-              ./scripts/release_snapshot.sh https://api.nuget.org/v3/index.json
+              ./scripts/release_snapshot.sh
             elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "alpha" ]]; then
               echo "Deploy prod artifact"
-              ./scripts/release_prod.sh https://api.nuget.org/v3/index.json
+              ./scripts/release_prod.sh
             else
               echo "Not releasable build, skipping deployment step"
             fi
-      - save_cache:
-          paths:
-            - ~/.nuget
-          key: v1-nuget-{{ .Branch }}-{{ .BuildNum }}
-  push-and-tag:
-    docker:
-      - image: circleci/openjdk:8-jdk
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
       - run:
-          name: Update GitHub
+          name: Create GitHub tag
           command: |
-            if [[ "${CIRCLE_BRANCH}" =~ release-.* ]]; then
               RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
+              git checkout master
+              git push origin master
               TAG="v${RELEASE_VERSION}"
               git tag -f ${TAG}
               git push origin ${TAG}
-            fi
+
 
   
