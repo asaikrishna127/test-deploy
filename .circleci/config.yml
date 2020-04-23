@@ -28,6 +28,9 @@ jobs:
       - image: circleci/openjdk:8-jdk
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
