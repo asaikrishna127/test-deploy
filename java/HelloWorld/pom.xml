@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.sushantmimani</groupId>
-  <artifactId>test-deploy</artifactId>
+  <artifactId>HelloWorld</artifactId>
   <version>0.0.5-SNAPSHOT</version>
 
   <name>test-deploy</name>

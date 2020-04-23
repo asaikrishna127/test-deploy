@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.sushantmimani</groupId>
-  <artifactId>test-deploy-1</artifactId>
-  <version>0.0.4</version>
+  <artifactId>SecondHelloWorld</artifactId>
+  <version>0.0.5-SNAPSHOT</version>
 
   <name>test-deploy-1</name>
   <description>A demo for deployment to the Central Repository via OSSRH</description>
