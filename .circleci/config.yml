@@ -14,6 +14,8 @@ workflows:
     jobs:
       - java-project
       - java-project-1
+        requires:
+          - java-project
       - csharp-project
       - csharp-project-1
       - push-and-tag:
@@ -50,9 +52,7 @@ jobs:
           name: Deploy if needed
           command: |
             cd java/test-deploy
-            pwd
-            cd ~
-            pwd
+
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
             RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
             BASE_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
