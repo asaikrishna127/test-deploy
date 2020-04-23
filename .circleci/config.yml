@@ -41,7 +41,7 @@ jobs:
       - run:
           name: Build
           command: |
-            cd java/test-deploy
+            cd java/HelloWorld
             ./scripts/clean.sh
             ./scripts/build.sh
       - save_cache:
@@ -65,7 +65,7 @@ jobs:
           command: |
             pwd
             ls
-            cd java/test-deploy-1
+            cd java/SecondHelloWorld
             ./scripts/clean.sh
             ./scripts/build.sh
       - save_cache:
@@ -93,7 +93,7 @@ jobs:
       - run:
           name: Build
           command: |
-            cd csharp/test-deploy
+            cd csharp/HelloWorld
             ./scripts/clean.sh
             ./scripts/build.sh
       - save_cache:
@@ -121,7 +121,7 @@ jobs:
       - run:
           name: Build
           command: |
-            cd csharp/test-deploy-1
+            cd csharp/SecondHelloWorld
             ./scripts/clean.sh
             ./scripts/build.sh
       - save_cache:
@@ -152,9 +152,9 @@ jobs:
             dotnet tool install -g dotnet-setversion
             export PATH="$PATH:/root/.dotnet/tools"
       - run:
-          name: Deploy java-project
+          name: Deploy HelloWorld
           command: |
-            cd java/test-deploy
+            cd java/HelloWorld
 
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
             RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
@@ -174,9 +174,9 @@ jobs:
 
             cd ../../
       - run:
-          name: Deploy java-project-1
+          name: Deploy SecondHelloWorld
           command: |
-            cd java/test-deploy-1
+            cd java/SecondHelloWorld
 
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
             RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
@@ -196,9 +196,9 @@ jobs:
 
             cd ../../
       - run:
-          name: Deploy csharp-project
+          name: Deploy HelloWorld
           command: |
-            cd csharp/test-deploy
+            cd csharp/HelloWorld
 
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
             RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
@@ -218,9 +218,9 @@ jobs:
 
             cd ../../
       - run:
-          name: Deploy csharp-project-1
+          name: Deploy SecondHelloWorld
           command: |
-            cd csharp/test-deploy-1
+            cd csharp/SecondHelloWorld
 
             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
             RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
