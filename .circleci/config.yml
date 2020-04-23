@@ -47,8 +47,8 @@ jobs:
 
             # Only deploy for master, RC tags, and prod release tags
             if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
-              echo "Detected master branch, proceeding to deploy Snapshot"
-              ./scripts/release_snapshot.sh
+              #echo "Detected master branch, proceeding to deploy Snapshot"
+              #./scripts/release_snapshot.sh
             elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "SNAPSHOT" ]]; then
               echo "Deploy prod artifact"
               ./scripts/release_prod.sh
@@ -93,8 +93,8 @@ jobs:
 
             # Only deploy for master, RC tags, and prod release tags
             if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
-              echo "Detected master branch, proceeding to deploy Snapshot"
-              ./scripts/release_snapshot.sh
+              #echo "Detected master branch, proceeding to deploy Snapshot"
+              #./scripts/release_snapshot.sh
             elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "SNAPSHOT" ]]; then
               echo "Deploy prod artifact"
               ./scripts/release_prod.sh
@@ -146,8 +146,8 @@ jobs:
 
             # Only deploy for master, RC tags, and prod release tags
             if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
-              echo "Detected master branch, proceeding to deploy Snapshot"
-              ./scripts/release_snapshot.sh https://api.nuget.org/v3/index.json
+              #echo "Detected master branch, proceeding to deploy Snapshot"
+              #./scripts/release_snapshot.sh https://api.nuget.org/v3/index.json
             elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "alpha" ]]; then
               echo "Deploy prod artifact"
               ./scripts/release_prod.sh https://api.nuget.org/v3/index.json
@@ -198,8 +198,8 @@ jobs:
 
             # Only deploy for master, RC tags, and prod release tags
             if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
-              echo "Detected master branch, proceeding to deploy Snapshot"
-              ./scripts/release_snapshot.sh https://api.nuget.org/v3/index.json
+              #echo "Detected master branch, proceeding to deploy Snapshot"
+              #./scripts/release_snapshot.sh https://api.nuget.org/v3/index.json
             elif [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "alpha" ]]; then
               echo "Deploy prod artifact"
               ./scripts/release_prod.sh https://api.nuget.org/v3/index.json
