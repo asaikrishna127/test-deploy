@@ -13,6 +13,7 @@ find . -name *${BASE_VERSION}.nupkg  | xargs -L1 -I '{}' dotnet nuget push {} -k
 MINOR_VERSION=`echo $BASE_VERSION | cut -f2 -d.`
 NEW_BASE_VERSION=`echo $BASE_VERSION | cut -f1 -d.`.$((${MINOR_VERSION}+1)).0
 dotnet tool install -g dotnet-setversion
+export PATH="$PATH:/root/.dotnet/tools"
 setversion "${NEW_BASE_VERSION}-alpha" Directory.Build.props
 git add Directory.Build.props
 git commit -m "Master version bump to ${NEW_BASE_VERSION}-alpha [skip ci]"
