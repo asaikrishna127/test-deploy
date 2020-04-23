@@ -13,9 +13,9 @@ workflows:
   build-test-and-maybe-deploy:
     jobs:
       - java-project
-      - java-project-1
-        requires:
-          - java-project
+      - java-project-1:
+          requires:
+            - java-project
       - csharp-project
       - csharp-project-1
       - push-and-tag:
