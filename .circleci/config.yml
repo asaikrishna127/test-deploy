@@ -130,7 +130,7 @@ jobs:
           key: v1-nuget-{{ .Branch }}-{{ .BuildNum }}
   deploy:
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: ubuntu:18.04
     steps:
       - checkout
       - add_ssh_keys:
@@ -139,6 +139,8 @@ jobs:
       - run:
           name: Setup environment
           command: |
+            apt-get install -y openjdk-11-jdk
+            apt-get install -y maven
             apt-get install -y wget curl
             wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
             dpkg -i packages-microsoft-prod.deb
