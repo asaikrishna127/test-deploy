@@ -137,6 +137,17 @@ jobs:
           fingerprints:
             - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
       - run:
+          name: Setup environment
+          command: |
+            apt-get install -y wget curl
+            wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+            dpkg -i packages-microsoft-prod.deb
+            apt-get install -y apt-transport-https
+            apt-get update
+            apt-get install -y dotnet-sdk-2.1
+            dotnet tool install -g dotnet-setversion
+            export PATH="$PATH:/root/.dotnet/tools"
+      - run:
           name: Deploy java-project
           command: |
             cd java/test-deploy
