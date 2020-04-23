@@ -16,4 +16,5 @@ export PATH="$PATH:/root/.dotnet/tools"
 setversion "${NEW_BASE_VERSION}-alpha" Directory.Build.props
 git add Directory.Build.props
 git commit -m "Master version bump to ${NEW_BASE_VERSION}-alpha [skip ci]"
+git pull origin master
 git push origin master

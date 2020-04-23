@@ -14,4 +14,5 @@ NEW_BASE_VERSION=`echo ${BASE_VERSION} | cut -f1 -d.`.$((${MINOR_VERSION}+1)).0
 mvn versions:set versions:commit -DnewVersion="${NEW_BASE_VERSION}-SNAPSHOT"
 git add pom.xml
 git commit -m "Master version bump to ${NEW_BASE_VERSION}-SNAPSHOT [ci skip]"
+git pull origin master
 git push origin master
