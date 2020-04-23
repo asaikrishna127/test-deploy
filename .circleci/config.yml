@@ -28,9 +28,7 @@ jobs:
       - image: circleci/openjdk:8-jdk
     steps:
       - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
+      - *attach_workspace
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
@@ -68,11 +66,14 @@ jobs:
           paths:
             - ~/.m2
           key: v1-maven-{{ .Branch }}-{{ .BuildNum }}
+      - persist_to_workspace:
+          root: *workspace_root
+          paths: .
   java-project-1:
     docker:
       - image: circleci/openjdk:8-jdk
     steps:
-      - checkout
+      - *attach_workspace
       - add_ssh_keys:
           fingerprints:
             - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
@@ -117,7 +118,7 @@ jobs:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
     steps:
-      - checkout
+      - *attach_workspace
       - add_ssh_keys:
           fingerprints:
             - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
@@ -169,7 +170,7 @@ jobs:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
     steps:
-      - checkout
+      - *attach_workspace
       - add_ssh_keys:
           fingerprints:
             - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
@@ -221,7 +222,7 @@ jobs:
     docker:
       - image: circleci/openjdk:8-jdk
     steps:
-      - checkout
+      - *attach_workspace
       - add_ssh_keys:
           fingerprints:
             - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
@@ -233,6 +234,10 @@ jobs:
               TAG="v${RELEASE_VERSION}"
               git tag -f ${TAG}
               git push origin ${TAG}
+              git checkout master
+              git status
+              git log -n 4
+              git push
             fi
 
   
