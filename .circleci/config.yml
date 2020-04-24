@@ -13,31 +13,6 @@ workflows:
           requires:
             - csharp-project
 
-
-commands:
-  deploy-java:
-    description: "Deploy the specified java project"
-    parameters:
-      project:
-        type: string
-    steps:
-      - run:
-          name: Deploy
-          command: |
-             cd java/<<parameters.project>>
-
-             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
-             RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
-             BASE_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
-             VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
-
-             if [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "SNAPSHOT" ]]; then
-               echo "Deploy prod artifact"
-               ./scripts/release_prod.sh
-             else
-               echo "Not releasable build, skipping deployment step"
-             fi
-
 jobs:
   java-project:
     docker:
@@ -60,8 +35,22 @@ jobs:
             cd java/HelloWorld
             ./scripts/clean.sh
             ./scripts/build.sh
-      - deploy-java:
-          project: HelloWorld
+      - run:
+          name: Deploy if needed
+          command: |
+            cd java/HelloWorld
+
+            # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
+            RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
+            BASE_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+            VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
+
+            if [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "SNAPSHOT" ]]; then
+              echo "Deploy prod artifact"
+              ./scripts/release_prod.sh
+            else
+              echo "Not releasable build, skipping deployment step"
+            fi
       - save_cache:
           paths:
             - ~/.m2
@@ -88,8 +77,22 @@ jobs:
             cd java/SecondHelloWorld
             ./scripts/clean.sh
             ./scripts/build.sh
-      - deploy-java:
-          project: SecondHelloWorld
+      - run:
+          name: Deploy if needed
+          command: |
+            cd java/SecondHelloWorld
+
+            # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
+            RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
+            BASE_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+            VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
+
+            if [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "SNAPSHOT" ]]; then
+              echo "Deploy prod artifact"
+              ./scripts/release_prod.sh
+            else
+              echo "Not releasable build, skipping deployment step"
+            fi
       - save_cache:
           paths:
             - ~/.m2
