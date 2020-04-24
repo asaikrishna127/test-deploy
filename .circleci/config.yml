@@ -20,6 +20,8 @@ commands:
     parameters:
       project:
         type: string
+      version_suffix:
+        type: string
     steps:
       - run:
           name: Deploy
@@ -60,8 +62,14 @@ jobs:
             cd java/HelloWorld
             ./scripts/clean.sh
             ./scripts/build.sh
-      - deploy-java:
-          project: HelloWorld
+      - run:
+          name: test
+          command: |
+            BASE_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+            deploy-java:
+              project: HelloWorld
+              base_version: ${BASE_VERSION}
+              version_suffix: SNAPSHOT
       - save_cache:
           paths:
             - ~/.m2
@@ -88,8 +96,13 @@ jobs:
             cd java/SecondHelloWorld
             ./scripts/clean.sh
             ./scripts/build.sh
-      - deploy-java:
-          project: SecondHelloWorld
+      - run:
+          name: test
+          command: |
+            deploy-java:
+              project: HelloWorld
+              version_suffix: SNAPSHOT
+              base_version: $(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
       - save_cache:
           paths:
             - ~/.m2
