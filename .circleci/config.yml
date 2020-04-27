@@ -188,11 +188,6 @@ jobs:
     steps:
       - checkout
       - add-git-key
-      - run:
-          name: Setup Go environment
-          command: |
-            apt-get update
-            apt-get install -y libxml2-utils jq
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
@@ -207,7 +202,7 @@ jobs:
             ./scripts/build.sh
       - deploy-project:
           project: go/HelloWorld
-          version: xmllint --xpath "//Project/Version/text()" .version
+          version: cat .version | jq -r .version
           version_suffix: ""
       - save_cache:
           paths:
@@ -219,11 +214,6 @@ jobs:
     steps:
       - checkout
       - add-git-key
-      - run:
-          name: Setup Go environment
-          command: |
-            apt-get update
-            apt-get install -y libxml2-utils jq
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
@@ -238,7 +228,7 @@ jobs:
             ./scripts/build.sh
       - deploy-project:
           project: go/SecondHelloWorld
-          version: xmllint --xpath "//Project/Version/text()" .version
+          version: cat .version | jq -r .version
           version_suffix: ""
       - save_cache:
           paths:

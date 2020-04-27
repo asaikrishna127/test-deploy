@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo "Release prod artifact"
-BASE_VERSION=$(xmllint --xpath "//Project/Version/text()" .version)
+BASE_VERSION=$(cat .version | jq -r .version)
 ARTIFACT_NAME=$(go mod edit -json | jq -r '.Module.Path')
 TAG=`echo go/${ARTIFACT_NAME}/v${BASE_VERSION}`
 
