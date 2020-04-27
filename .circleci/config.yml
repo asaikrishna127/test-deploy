@@ -24,8 +24,6 @@ commands:
     parameters:
       project:
         type: string
-      version_suffix:
-        type: string
       version:
         type: string
     steps:
@@ -39,7 +37,7 @@ commands:
              BASE_VERSION=$(<<parameters.version>>)
              VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
 
-             if [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "<<parameters.version_suffix>>" ]]; then
+             if [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" == "" ]]; then
                echo "Deploy prod artifact"
                ./scripts/release_prod.sh
              else
@@ -76,7 +74,6 @@ jobs:
       - deploy-project:
           project: java/HelloWorld
           version: mvn -q -DforceStdout help:evaluate -Dexpression=project.version
-          version_suffix: SNAPSHOT
       - save_cache:
           paths:
             - ~/.m2
@@ -104,7 +101,6 @@ jobs:
       - deploy-project:
           project: java/SecondHelloWorld
           version: mvn -q -DforceStdout help:evaluate -Dexpression=project.version
-          version_suffix: SNAPSHOT
       - save_cache:
           paths:
             - ~/.m2
@@ -141,7 +137,6 @@ jobs:
       - deploy-project:
           project: csharp/HelloWorld
           version: xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props
-          version_suffix: alpha
       - save_cache:
           paths:
             - ~/.nuget
@@ -177,7 +172,6 @@ jobs:
       - deploy-project:
           project: csharp/SecondHelloWorld
           version: xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props
-          version_suffix: alpha
       - save_cache:
           paths:
             - ~/.nuget
@@ -203,7 +197,6 @@ jobs:
       - deploy-project:
           project: go/HelloWorld
           version: cat .version | jq -r .version
-          version_suffix: ""
       - save_cache:
           paths:
             - /go/pkg/mod
@@ -229,7 +222,6 @@ jobs:
       - deploy-project:
           project: go/SecondHelloWorld
           version: cat .version | jq -r .version
-          version_suffix: ""
       - save_cache:
           paths:
             - /go/pkg/mod
