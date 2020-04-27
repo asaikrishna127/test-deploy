@@ -198,7 +198,7 @@ jobs:
       - run:
           name: Build
           command: |
-            cd go/Helloworld
+            cd go/HelloWorld
             ./scripts/build.sh
       - deploy-project:
           project: go/HelloWorld
@@ -224,7 +224,7 @@ jobs:
       - run:
           name: Build
           command: |
-            cd go/SecondHelloworld
+            cd go/SecondHelloWorld
             ./scripts/build.sh
       - deploy-project:
           project: go/SecondHelloWorld
