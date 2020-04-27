@@ -4,24 +4,59 @@ workflows:
   version: 2
   build-test-and-maybe-deploy:
     jobs:
-      - java-project
-      - java-project-1:
+      - java-hello-world
+      - java-second-hello-world:
           requires:
-            - java-project
-      - csharp-project
-      - csharp-project-1:
+            - java-hello-world
+      - csharp-hello-world
+      - csharp-second-hello-world:
           requires:
-            - csharp-project
+            - csharp-hello-world
+      - go-hello-world
+      - go-second-hello-world:
+          requires:
+            - go-hello-world
+
+
+commands:
+  deploy-project:
+    description: "Deploy the specified project"
+    parameters:
+      project:
+        type: string
+      version:
+        type: string
+    steps:
+      - run:
+          name: Deploy
+          command: |
+             cd <<parameters.project>>
+
+             # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
+             RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
+             BASE_VERSION=$(<<parameters.version>>)
+             VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
+
+             if [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" == "" ]]; then
+               ./scripts/release_prod.sh
+             else
+               echo "Not releasable build, skipping deployment step"
+             fi
+
+  add-git-key:
+    description: "Add GitHub Key"
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
 
 jobs:
-  java-project:
+  java-hello-world:
     docker:
       - image: circleci/openjdk:8-jdk
     steps:
       - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
+      - add-git-key
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
@@ -35,34 +70,19 @@ jobs:
             cd java/HelloWorld
             ./scripts/clean.sh
             ./scripts/build.sh
-      - run:
-          name: Deploy if needed
-          command: |
-            cd java/HelloWorld
-
-            # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
-            RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
-            BASE_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
-            VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
-
-            if [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "SNAPSHOT" ]]; then
-              echo "Deploy prod artifact"
-              ./scripts/release_prod.sh
-            else
-              echo "Not releasable build, skipping deployment step"
-            fi
+      - deploy-project:
+          project: java/HelloWorld
+          version: mvn -q -DforceStdout help:evaluate -Dexpression=project.version
       - save_cache:
           paths:
             - ~/.m2
           key: v1-maven-{{ .Branch }}-{{ .BuildNum }}
-  java-project-1:
+  java-second-hello-world:
     docker:
       - image: circleci/openjdk:8-jdk
     steps:
       - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
+      - add-git-key
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
@@ -77,34 +97,21 @@ jobs:
             cd java/SecondHelloWorld
             ./scripts/clean.sh
             ./scripts/build.sh
-      - run:
-          name: Deploy if needed
-          command: |
-            cd java/SecondHelloWorld
-
-            # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
-            RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
-            BASE_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
-            VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
-
-            if [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "SNAPSHOT" ]]; then
-              echo "Deploy prod artifact"
-              ./scripts/release_prod.sh
-            else
-              echo "Not releasable build, skipping deployment step"
-            fi
+      - deploy-project:
+          project: java/SecondHelloWorld
+          version: mvn -q -DforceStdout help:evaluate -Dexpression=project.version
       - save_cache:
           paths:
             - ~/.m2
           key: v1-maven-{{ .Branch }}-{{ .BuildNum }}
-  csharp-project:
+  csharp-hello-world:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
+        environment:
+          NUGET_SOURCE: https://api.nuget.org/v3/index.json
     steps:
       - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
+      - add-git-key
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
@@ -126,34 +133,21 @@ jobs:
             ./scripts/clean.sh
             ./scripts/build.sh
 
-      - run:
-          name: Deploy if needed
-          command: |
-            cd csharp/HelloWorld
-
-            # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
-            RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
-            BASE_VERSION=$(xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props)
-            VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
-
-            if [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "alpha" ]]; then
-              echo "Deploy prod artifact"
-              ./scripts/release_prod.sh https://api.nuget.org/v3/index.json
-            else
-              echo "Not releasable build, skipping deployment step"
-            fi
+      - deploy-project:
+          project: csharp/HelloWorld
+          version: xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props
       - save_cache:
           paths:
             - ~/.nuget
           key: v1-nuget-{{ .Branch }}-{{ .BuildNum }}
-  csharp-project-1:
+  csharp-second-hello-world:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
+        environment:
+          NUGET_SOURCE: https://api.nuget.org/v3/index.json
     steps:
       - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
+      - add-git-key
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
@@ -174,23 +168,60 @@ jobs:
             cd csharp/SecondHelloWorld
             ./scripts/clean.sh
             ./scripts/build.sh
-      - run:
-          name: Deploy if needed
-          command: |
-            cd csharp/SecondHelloWorld
-
-            # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
-            RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
-            BASE_VERSION=$(xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props)
-            VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
-
-            if [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "alpha" ]]; then
-              echo "Deploy prod artifact"
-              ./scripts/release_prod.sh https://api.nuget.org/v3/index.json
-            else
-              echo "Not releasable build, skipping deployment step"
-            fi
+      - deploy-project:
+          project: csharp/SecondHelloWorld
+          version: xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props
       - save_cache:
           paths:
             - ~/.nuget
           key: v1-nuget-{{ .Branch }}-{{ .BuildNum }}
+  go-hello-world:
+    docker:
+      - image: circleci/golang
+    steps:
+      - checkout
+      - add-git-key
+      - restore_cache:
+          keys:
+            # when project files change, use increasingly general patterns to restore cache.
+            # vN prefix in case we ever need to regenerate all caches
+            - go-mod-v4-{{ .Branch }}-{{ .BuildNum }}
+            - go-mod-v4-{{ .Branch }}-
+            - go-mod-v4-
+      - run:
+          name: Build
+          command: |
+            cd go/HelloWorld
+            ./scripts/build.sh
+      - deploy-project:
+          project: go/HelloWorld
+          version: cat .version | jq -r .version
+      - save_cache:
+          paths:
+            - /go/pkg/mod
+          key: go-mod-v4-{{ .Branch }}-{{ .BuildNum }}
+  go-second-hello-world:
+    docker:
+      - image: circleci/golang
+    steps:
+      - checkout
+      - add-git-key
+      - restore_cache:
+          keys:
+            # when project files change, use increasingly general patterns to restore cache.
+            # vN prefix in case we ever need to regenerate all caches
+            - go-mod-v4-{{ .Branch }}-{{ .BuildNum }}
+            - go-mod-v4-{{ .Branch }}-
+            - go-mod-v4-
+      - run:
+          name: Build
+          command: |
+            cd go/SecondHelloWorld
+            ./scripts/build.sh
+      - deploy-project:
+          project: go/SecondHelloWorld
+          version: cat .version | jq -r .version
+      - save_cache:
+          paths:
+            - /go/pkg/mod
+          key: go-mod-v4-{{ .Branch }}-{{ .BuildNum }}
