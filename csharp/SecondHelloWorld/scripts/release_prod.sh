@@ -6,7 +6,6 @@ TAG=`echo csharp/${ARTIFACT_NAME}/v${BASE_VERSION}`
 
 RESULT=$(git tag -l ${TAG})
 if [[ "$RESULT" != ${TAG} ]]; then
-    export NUGET_SOURCE=$1
     dotnet pack -c Release --no-build
 
     find . -name *${BASE_VERSION}.nupkg  | xargs -L1 -I '{}' dotnet nuget push {} -k ${NUGET_KEY} -s ${NUGET_SOURCE}
