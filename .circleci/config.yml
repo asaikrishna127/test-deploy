@@ -76,14 +76,14 @@ jobs:
             cd java/HelloWorld
             ./scripts/clean.sh
             ./scripts/build.sh
-      - deploy-project:
-          project: java/HelloWorld
-          version: mvn -q -DforceStdout help:evaluate -Dexpression=project.version
-          version_suffix: SNAPSHOT
       - save_cache:
           paths:
             - ~/.m2
           key: v1-maven-{{ .Branch }}-{{ .BuildNum }}
+      - deploy-project:
+          project: java/HelloWorld
+          version: mvn -q -DforceStdout help:evaluate -Dexpression=project.version
+          version_suffix: SNAPSHOT
   java-second-hello-world:
     docker:
       - image: circleci/openjdk:8-jdk
@@ -104,14 +104,14 @@ jobs:
             cd java/SecondHelloWorld
             ./scripts/clean.sh
             ./scripts/build.sh
-      - deploy-project:
-          project: java/SecondHelloWorld
-          version: mvn -q -DforceStdout help:evaluate -Dexpression=project.version
-          version_suffix: SNAPSHOT
       - save_cache:
           paths:
             - ~/.m2
           key: v1-maven-{{ .Branch }}-{{ .BuildNum }}
+      - deploy-project:
+          project: java/SecondHelloWorld
+          version: mvn -q -DforceStdout help:evaluate -Dexpression=project.version
+          version_suffix: SNAPSHOT
   csharp-hello-world:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
@@ -140,15 +140,14 @@ jobs:
             cd csharp/HelloWorld
             ./scripts/clean.sh
             ./scripts/build.sh
-
-      - deploy-project:
-          project: csharp/HelloWorld
-          version: xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props
-          version_suffix: alpha
       - save_cache:
           paths:
             - ~/.nuget
           key: v1-nuget-{{ .Branch }}-{{ .BuildNum }}
+      - deploy-project:
+          project: csharp/HelloWorld
+          version: xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props
+          version_suffix: alpha
   csharp-second-hello-world:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
@@ -177,14 +176,14 @@ jobs:
             cd csharp/SecondHelloWorld
             ./scripts/clean.sh
             ./scripts/build.sh
-      - deploy-project:
-          project: csharp/SecondHelloWorld
-          version: xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props
-          version_suffix: alpha
       - save_cache:
           paths:
             - ~/.nuget
           key: v1-nuget-{{ .Branch }}-{{ .BuildNum }}
+      - deploy-project:
+          project: csharp/HelloWorld
+          version: xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props
+          version_suffix: alpha
   go-hello-world:
     docker:
       - image: circleci/golang
@@ -203,14 +202,14 @@ jobs:
           command: |
             cd go/HelloWorld
             ./scripts/build.sh
-      - deploy-project:
-          project: go/HelloWorld
-          version: cat .version | jq -r .version
-          version_suffix: alpha
       - save_cache:
           paths:
             - /go/pkg/mod
           key: go-mod-v4-{{ .Branch }}-{{ .BuildNum }}
+      - deploy-project:
+          project: go/HelloWorld
+          version: cat .version | jq -r .version
+          version_suffix: alpha
   go-second-hello-world:
     docker:
       - image: circleci/golang
@@ -229,11 +228,11 @@ jobs:
           command: |
             cd go/SecondHelloWorld
             ./scripts/build.sh
-      - deploy-project:
-          project: go/SecondHelloWorld
-          version: cat .version | jq -r .version
-          version_suffix: alpha
       - save_cache:
           paths:
             - /go/pkg/mod
           key: go-mod-v4-{{ .Branch }}-{{ .BuildNum }}
+      - deploy-project:
+          project: go/SecondHelloWorld
+          version: cat .version | jq -r .version
+          version_suffix: alpha
