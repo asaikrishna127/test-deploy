@@ -32,7 +32,7 @@ commands:
       - run:
           name: Deploy
           command: |
-            if [[ "${CI_PULL_REQUEST}" == "" ]]; then
+            if [[ "${CI_PULL_REQUEST}" != "" ]]; then
               echo "Skipping deployment for PR"
               circleci step halt
             else
