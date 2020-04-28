@@ -7,6 +7,6 @@ RESULT=$(git tag -l ${TAG})
 if [[ "$RESULT" != ${TAG}  && ${BASE_VERSION} != "0.0.0" ]]; then
     # Create tag
     echo "Creating a new release tag"
-    git tag -f ${TAG}
+    git tag -f ${TAG} ${CIRCLE_SHA1}
     git push origin ${TAG}
 fi

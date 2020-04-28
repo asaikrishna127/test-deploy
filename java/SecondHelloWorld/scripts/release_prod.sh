@@ -10,6 +10,6 @@ if [[ "$RESULT" != ${TAG} ]]; then
     mvn -DskipTests -s ../../.circleci/settings.xml deploy -Prelease
 
     # Create tag
-    git tag -f ${TAG}
+    git tag -f ${TAG} ${CIRCLE_SHA1}
     git push origin ${TAG}
 fi

@@ -9,6 +9,6 @@ if [[ "$RESULT" != ${TAG} ]]; then
     echo "Release prod artifact"
     find . -name *${BASE_VERSION}.nupkg  | xargs -L1 -I '{}' dotnet nuget push {} -k ${NUGET_KEY} -s ${NUGET_SOURCE}
     # Create tag
-    git tag -f ${TAG}
+    git tag -f ${TAG} ${CIRCLE_SHA1}
     git push origin ${TAG}
 fi
