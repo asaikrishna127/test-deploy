@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -e
+
 BASE_VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
 ARTIFACT_NAME=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.artifactId)
 TAG=`echo java/${ARTIFACT_NAME}/v${BASE_VERSION}`

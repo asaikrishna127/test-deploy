@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -e
+
 BASE_VERSION=$(xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props)
 ARTIFACT_NAME=$(xmllint --xpath "//package/metadata/title/text()" SecondHelloWorld.nuspec)
 TAG=`echo csharp/${ARTIFACT_NAME}/v${BASE_VERSION}`

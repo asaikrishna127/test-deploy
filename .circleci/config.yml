@@ -208,7 +208,7 @@ jobs:
           key: go-mod-v4-{{ .Branch }}-{{ .BuildNum }}
       - deploy-project:
           project: go/HelloWorld
-          version: cat .version | jq -r .version
+          version: cat .version
           version_suffix: alpha
   go-second-hello-world:
     docker:
@@ -234,5 +234,5 @@ jobs:
           key: go-mod-v4-{{ .Branch }}-{{ .BuildNum }}
       - deploy-project:
           project: go/SecondHelloWorld
-          version: cat .version | jq -r .version
+          version: cat .version
           version_suffix: alpha

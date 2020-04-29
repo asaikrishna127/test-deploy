@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -e
+
 echo "Deploying snapshot"
 FULL_VERSION=$(xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props)
 echo ${FULL_VERSION}
