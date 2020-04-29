@@ -14,4 +14,6 @@ if [[ "$RESULT" != ${TAG} ]]; then
     # Create tag
     git tag -f ${TAG} ${CIRCLE_SHA1}
     git push origin ${TAG}
+else
+    echo "Version is already deployed and tagged"
 fi
