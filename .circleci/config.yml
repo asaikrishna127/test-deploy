@@ -26,8 +26,6 @@ commands:
         type: string
       version:
         type: string
-      version_suffix:
-        type: string
     steps:
       - run:
           name: Deploy
@@ -37,9 +35,14 @@ commands:
              # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
              RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
              BASE_VERSION=$(<<parameters.version>>)
-             VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
 
-             if [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "<<parameters.version_suffix>>" ]]; then
+             if [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "alpha" ]]; then
+               mkdir -p ~/.ssh
+               echo "Adding github.com as known host."
+               echo $GITHUB_PUBLIC_KEY >> ~/.ssh/known_hosts
+               echo "Setting private SSH key."
+               echo $GITHUB_COMMIT_KEY | base64 --decode >> ~/.ssh/id_rsa
+               chmod 400 ~/.ssh/id_rsa # prevents "UNPROTECTED PRIVATE KEY FILE" error
                ./scripts/release_prod.sh
              else
                echo "Not releasable build, skipping deployment step"
@@ -78,7 +81,6 @@ jobs:
       - deploy-project:
           project: java/HelloWorld
           version: mvn -q -DforceStdout help:evaluate -Dexpression=project.version
-          version_suffix: SNAPSHOT
   java-second-hello-world:
     docker:
       - image: circleci/openjdk:8-jdk
@@ -106,7 +108,6 @@ jobs:
       - deploy-project:
           project: java/SecondHelloWorld
           version: mvn -q -DforceStdout help:evaluate -Dexpression=project.version
-          version_suffix: SNAPSHOT
   csharp-hello-world:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
@@ -142,7 +143,6 @@ jobs:
       - deploy-project:
           project: csharp/HelloWorld
           version: xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props
-          version_suffix: alpha
   csharp-second-hello-world:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
@@ -178,7 +178,6 @@ jobs:
       - deploy-project:
           project: csharp/HelloWorld
           version: xmllint --xpath "//Project/PropertyGroup/Version/text()" Directory.Build.props
-          version_suffix: alpha
   go-hello-world:
     docker:
       - image: circleci/golang
@@ -204,7 +203,6 @@ jobs:
       - deploy-project:
           project: go/HelloWorld
           version: cat .version
-          version_suffix: alpha
   go-second-hello-world:
     docker:
       - image: circleci/golang
@@ -230,4 +228,3 @@ jobs:
       - deploy-project:
           project: go/SecondHelloWorld
           version: cat .version
-          version_suffix: alpha

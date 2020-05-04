@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-BASE_VERSION=$(cat .version | jq -r .version)
+BASE_VERSION=$(cat .version)
 ARTIFACT_NAME=$(go mod edit -json | jq -r '.Module.Path')
 TAG=`echo go/${ARTIFACT_NAME}/v${BASE_VERSION}`
 
