@@ -13,6 +13,7 @@ if [[ "$RESULT" != ${TAG} ]]; then
 
     # Create tag
     git tag -f ${TAG} ${CIRCLE_SHA1}
+    ssh-agent sh -c 'ssh-add ~/.ssh/id_rsa; git push ${CIRCLE_REPOSITORY_URL}'
     ssh-agent sh -c 'ssh-add ~/.ssh/id_rsa;git push -u  origin ${TAG}'
 else
     echo "Version is already deployed and tagged"
