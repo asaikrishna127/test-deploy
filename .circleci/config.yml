@@ -47,12 +47,6 @@ commands:
              else
                echo "Not releasable build, skipping deployment step"
              fi
-  add-git-key:
-    description: "Add GitHub Key"
-    steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "17:87:32:b5:2b:dd:3e:ce:3f:6e:71:68:7d:c4:4f:65"
 
 jobs:
   java-hello-world:
@@ -60,7 +54,6 @@ jobs:
       - image: circleci/openjdk:8-jdk
     steps:
       - checkout
-      - add-git-key
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
@@ -86,7 +79,6 @@ jobs:
       - image: circleci/openjdk:8-jdk
     steps:
       - checkout
-      - add-git-key
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
@@ -115,7 +107,6 @@ jobs:
           NUGET_SOURCE: https://api.nuget.org/v3/index.json
     steps:
       - checkout
-      - add-git-key
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
@@ -150,7 +141,6 @@ jobs:
           NUGET_SOURCE: https://api.nuget.org/v3/index.json
     steps:
       - checkout
-      - add-git-key
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
@@ -183,7 +173,6 @@ jobs:
       - image: circleci/golang
     steps:
       - checkout
-      - add-git-key
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
@@ -208,7 +197,6 @@ jobs:
       - image: circleci/golang
     steps:
       - checkout
-      - add-git-key
       - restore_cache:
           keys:
             # when project files change, use increasingly general patterns to restore cache.
