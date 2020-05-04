@@ -33,8 +33,8 @@ commands:
              cd <<parameters.project>>
 
              # Rather than triggering off tag pushes, we inspect for whether HEAD of release branches are tagged
-             RELEASE_VERSION=`echo ${CIRCLE_BRANCH} | cut -f2 -d'-'`
              BASE_VERSION=$(<<parameters.version>>)
+             VERSION_SUFFIX=`echo ${BASE_VERSION} | cut -f2 -d'-'`
 
              if [[ "${CIRCLE_BRANCH}" =~ release-.* && "${VERSION_SUFFIX}" != "alpha" ]]; then
                mkdir -p ~/.ssh
