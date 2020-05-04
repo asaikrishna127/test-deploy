@@ -9,5 +9,6 @@ RESULT=$(git tag -l ${TAG})
 if [[ "$RESULT" != ${TAG}  && ${BASE_VERSION} != "0.0.0" ]]; then
     # Create tag
     echo "Creating a new release tag"
-    ssh-agent sh -c 'ssh-add ~/.ssh/id_rsa;git tag -f ${TAG} ${CIRCLE_SHA1}'
+    git tag -f ${TAG} ${CIRCLE_SHA1}
+    git tag -l
 fi
