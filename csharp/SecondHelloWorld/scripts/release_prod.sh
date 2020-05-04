@@ -12,5 +12,5 @@ if [[ "$RESULT" != ${TAG} ]]; then
     find . -name *${BASE_VERSION}.nupkg  | xargs -L1 -I '{}' dotnet nuget push {} -k ${NUGET_KEY} -s ${NUGET_SOURCE}
     # Create tag
     git tag -f ${TAG} ${CIRCLE_SHA1}
-    ssh-agent sh -c 'ssh-add ~/.ssh/id_rsa; git push origin --tags'
+    ssh-agent sh -c 'ssh-add ~/.ssh/id_rsa_git; git push origin --tags'
 fi
