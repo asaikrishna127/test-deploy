@@ -8,9 +8,6 @@
         <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
         <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
         <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    </PropertyGroup>
-
-    <PropertyGroup>
         <!-- Properties related to NuGet packaging: -->
         <PackageId>com.github.sushantmimani.helloworld</PackageId>
         <Title>FirstHelloWorld</Title>
@@ -20,6 +17,7 @@
         <PackageProjectUrl>https://github.com/sushantmimani/test-deploy</PackageProjectUrl>
         <RepositoryUrl>https://github.com/sushantmimani/test-deploy</RepositoryUrl>
         <IncludeSymbols>False</IncludeSymbols>
+        <!-- End of Properties related to NuGet packaging: -->
     </PropertyGroup>
 
 </Project>
