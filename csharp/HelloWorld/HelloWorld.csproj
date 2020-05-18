@@ -1,14 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netcoreapp2.1</TargetFramework>
-        <PackageId>com.github.sushantmimani.helloworld</PackageId>
         <!-- NOTE: Version controlled via Directory.Build.props  -->
         <!--<Version></Version>-->
-        <Authors>Sushant</Authors>
         <RootNamespace>com.github.sushantmimani</RootNamespace>
         <LangVersion>7.1</LangVersion>
         <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
         <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
         <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- Properties related to NuGet packaging: -->
+        <PackageId>com.github.sushantmimani.helloworld</PackageId>
+        <Title>FirstHelloWorld</Title>
+        <Description>Testing nuget deployments</Description>
+        <Authors>Sushant Mimani</Authors>
+        <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+        <PackageProjectUrl>https://github.com/sushantmimani/test-deploy</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/sushantmimani/test-deploy</RepositoryUrl>
+        <IncludeSymbols>False</IncludeSymbols>
+    </PropertyGroup>
+
 </Project>
