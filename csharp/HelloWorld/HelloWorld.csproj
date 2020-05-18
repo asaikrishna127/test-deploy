@@ -17,7 +17,7 @@
         <PackageProjectUrl>https://github.com/sushantmimani/test-deploy</PackageProjectUrl>
         <RepositoryUrl>https://github.com/sushantmimani/test-deploy</RepositoryUrl>
         <IncludeSymbols>False</IncludeSymbols>
-        <License>MIT</License>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <!-- End of Properties related to NuGet packaging: -->
     </PropertyGroup>
 
