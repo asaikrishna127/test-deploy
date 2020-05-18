@@ -6,10 +6,6 @@
         <title>HelloWorld</title>
         <authors>$author$</authors>
         <owners>$author$</owners>
-        <projectUrl>https://github.com/sushantmimani/test-deploy</projectUrl>
-        <repository type="git" url="https://github.com/sushantmimani/test-deploy.git" />
-        <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>$description$</description>
-        <copyright>Copyright 2020</copyright>
+
     </metadata>
 </package>
